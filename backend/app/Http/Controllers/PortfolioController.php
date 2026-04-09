@@ -285,7 +285,13 @@ class PortfolioController extends Controller
 
     public function getPublicPortfolio($userId)
     {
-        $user = \App\Models\User::findOrFail($userId);
+        $user = \App\Models\User::find($userId);
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Portfolio not found. Please register and add your data.'
+            ], 404);
+        }
 
         return response()->json([
             'profile' => $user->profile,

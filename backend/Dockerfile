@@ -1,4 +1,3 @@
-# Change from 8.3 to 8.4 to support Laravel 13/Symfony 8 requirements
 FROM php:8.4-cli
 
 # Install system dependencies
@@ -20,7 +19,6 @@ WORKDIR /var/www/html
 
 # Copy composer files first for layer caching
 COPY composer.json composer.lock ./
-# We add --ignore-platform-reqs just in case, but PHP 8.4 fixes the main issue
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Copy package.json and install node deps for Vite build
@@ -46,8 +44,7 @@ RUN mkdir -p storage/framework/{sessions,views,cache} \
 # Expose port (Render uses PORT env variable)
 EXPOSE 8000
 
-# Start script: cache config/routes, run migrations, then serve
-# We use the ${PORT} variable which Render provides automatically
+# Start: cache config first, then routes/views, migrate, then serve
 CMD php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache && \
